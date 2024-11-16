@@ -65,32 +65,23 @@ namespace WebApplication9.Controllers
 
             try
             {
-                // Check if the output file already exists, and delete it if it does (with retry logic)
-                if (System.IO.File.Exists(outputFilePath))
-                {
-                    int retryCount = 0;
-                    bool fileDeleted = false;
-                    while (retryCount < 3 && !fileDeleted)
-                    {
-                        try
-                        {
-                            System.IO.File.Delete(outputFilePath); // Attempt to delete the existing file
-                            fileDeleted = true;  // If deletion is successful, exit the loop
-                        }
-                        catch (IOException)
-                        {
-                            retryCount++;
-                            System.Threading.Thread.Sleep(500); // Wait for 500ms before retrying
-                        }
-                    }
+                // Check if the input format matches the target format
+                string inputExtension = Path.GetExtension(fileName)?.TrimStart('.').ToLower();
+                string targetExtension = targetFormat.ToLower();
 
-                    if (!fileDeleted)
-                    {
-                        return BadRequest("Could not delete existing file. It may be locked or in use.");
-                    }
+                if (inputExtension == targetExtension)
+                {
+                    TempData["ErrorMessage"] = "The source and target formats are the same. Please select a different format for conversion.";
+                    return RedirectToAction("Index");
                 }
 
-                // Set FFmpeg arguments based on the target format
+                // Check if the output file already exists, and delete it
+                if (System.IO.File.Exists(outputFilePath))
+                {
+                    System.IO.File.Delete(outputFilePath);
+                }
+
+                // FFmpeg conversion process
                 var processStartInfo = new ProcessStartInfo
                 {
                     FileName = ffmpegExePath,
@@ -105,14 +96,15 @@ namespace WebApplication9.Controllers
                 using (var process = new Process { StartInfo = processStartInfo })
                 {
                     process.Start();
-                    output = process.StandardError.ReadToEnd(); // FFmpeg writes logs to StandardError
+                    output = process.StandardError.ReadToEnd();
                     process.WaitForExit();
                 }
 
                 if (!System.IO.File.Exists(outputFilePath))
                 {
                     Debug.WriteLine($"FFmpeg Error: {output}");
-                    return StatusCode(500, "Video conversion failed. Check server logs for details.");
+                    TempData["ErrorMessage"] = "Video conversion failed. Please try again later.";
+                    return RedirectToAction("Index");
                 }
 
                 return RedirectToAction("Download", new { fileName = outputFileName });
@@ -120,9 +112,11 @@ namespace WebApplication9.Controllers
             catch (Exception ex)
             {
                 Debug.WriteLine($"Exception: {ex.Message}");
-                return StatusCode(500, "An error occurred during video conversion.");
+                TempData["ErrorMessage"] = "An unexpected error occurred during video conversion.";
+                return RedirectToAction("Index");
             }
         }
+
 
         // Download converted file
         public IActionResult Download(string fileName)

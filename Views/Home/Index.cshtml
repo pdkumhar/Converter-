@@ -2,6 +2,12 @@
 @{
     ViewData["Title"] = "Video Upload";
 }
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
 
 <h1>Upload a Video File</h1>
 

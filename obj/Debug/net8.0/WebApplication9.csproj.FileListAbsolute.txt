@@ -31,3 +31,4 @@ C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Debug\net8.0\ref
 C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Debug\net8.0\WebApplication9.pdb
 C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Debug\net8.0\WebApplication9.genruntimeconfig.cache
 C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Debug\net8.0\ref\WebApplication9.dll
+C:\Users\pdkum\source\repos\WebApplication9\webapplication9\obj\Debug\net8.0\WebApplication9.sourcelink.json
