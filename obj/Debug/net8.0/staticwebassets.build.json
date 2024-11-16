@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "tmtic+EzX91Rn3lMZPsMBCymLOnuaeIQaFQ5CH/r2Xw=",
+  "Hash": "7yxYHj9eNvvkUKmy7XD9ima5MQiyxnCV4sEVhgL3Otw=",
   "Source": "WebApplication9",
   "BasePath": "_content/WebApplication9",
   "Mode": "Default",
@@ -1231,6 +1231,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\uploads\\ChatGPT - Google Chrome 2024-11-15 16-48-40.avi"
+    },
+    {
+      "Identity": "C:\\Users\\pdkum\\source\\repos\\WebApplication9\\webapplication9\\wwwroot\\uploads\\ChatGPT - Google Chrome 2024-11-15 16-48-40.mov",
+      "SourceId": "WebApplication9",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\pdkum\\source\\repos\\WebApplication9\\webapplication9\\wwwroot\\",
+      "BasePath": "_content/WebApplication9",
+      "RelativePath": "uploads/ChatGPT - Google Chrome 2024-11-15 16-48-40.mov",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\ChatGPT - Google Chrome 2024-11-15 16-48-40.mov"
     },
     {
       "Identity": "C:\\Users\\pdkum\\source\\repos\\WebApplication9\\webapplication9\\wwwroot\\uploads\\ChatGPT - Google Chrome 2024-11-15 16-48-40.mp4",

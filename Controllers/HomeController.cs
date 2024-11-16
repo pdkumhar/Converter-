@@ -9,45 +9,49 @@ namespace WebApplication9.Controllers
 {
     public class HomeController : Controller
     {
-        // Upload video and display the conversion option
+        // GET: Display the main page where the user can upload a file
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
+        // POST: Handle the file upload
         [HttpPost]
         public async Task<IActionResult> Upload(IFormFile videoFile)
         {
-            if (videoFile != null && videoFile.Length > 0)
+            if (videoFile == null || videoFile.Length == 0)
             {
-                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-                if (!Directory.Exists(uploadsFolder))
-                    Directory.CreateDirectory(uploadsFolder);
-
-                string filePath = Path.Combine(uploadsFolder, videoFile.FileName);
-
-                try
-                {
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await videoFile.CopyToAsync(stream);
-                    }
-
-                    return View("Convert", new VideoFile { FileName = videoFile.FileName });
-                }
-                catch (Exception ex)
-                {
-                    // Log the error for debugging
-                    Debug.WriteLine($"Upload Error: {ex.Message}");
-                    return StatusCode(500, "An error occurred while uploading the file.");
-                }
+                ViewBag.ErrorMessage = "No file selected. Please choose a file to upload.";
+                return View("Index");
             }
 
-            return View("Index");
+            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            string filePath = Path.Combine(uploadsFolder, videoFile.FileName);
+
+            try
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await videoFile.CopyToAsync(stream);
+                }
+
+                // Pass the uploaded file to the same view for conversion
+                ViewBag.FileName = videoFile.FileName;
+                return View("Index");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Upload Error: {ex.Message}");
+                ViewBag.ErrorMessage = "An error occurred while uploading the file.";
+                return View("Index");
+            }
         }
 
-        // Convert video to a different format (e.g., MP4 to AVI)
+        // POST: Handle the video conversion
         [HttpPost]
         public IActionResult Convert(string fileName, string targetFormat)
         {
@@ -63,38 +67,45 @@ namespace WebApplication9.Controllers
                 return BadRequest("FFmpeg executable not found.");
             }
 
+            if (!System.IO.File.Exists(inputFilePath))
+            {
+                return BadRequest("Input file not found.");
+            }
+
+            // Check if the formats are different
+            if (Path.GetExtension(fileName).TrimStart('.').ToLower() == targetFormat.ToLower())
+            {
+                return BadRequest("Source and target formats are the same. Please choose a different format.");
+            }
+
             try
             {
-                // Check if the output file already exists, and delete it if it does (with retry logic)
                 if (System.IO.File.Exists(outputFilePath))
                 {
-                    int retryCount = 0;
-                    bool fileDeleted = false;
-                    while (retryCount < 3 && !fileDeleted)
-                    {
-                        try
-                        {
-                            System.IO.File.Delete(outputFilePath); // Attempt to delete the existing file
-                            fileDeleted = true;  // If deletion is successful, exit the loop
-                        }
-                        catch (IOException)
-                        {
-                            retryCount++;
-                            System.Threading.Thread.Sleep(500); // Wait for 500ms before retrying
-                        }
-                    }
-
-                    if (!fileDeleted)
-                    {
-                        return BadRequest("Could not delete existing file. It may be locked or in use.");
-                    }
+                    System.IO.File.Delete(outputFilePath);
                 }
 
-                // Set FFmpeg arguments based on the target format
+                // Add FFmpeg arguments based on the selected format
+                string ffmpegArguments = $"-i \"{inputFilePath}\" \"{outputFilePath}\"";
+
+                // Adjust arguments for specific formats
+                if (targetFormat == "wmv")
+                {
+                    ffmpegArguments = $"-i \"{inputFilePath}\" -c:v wmv2 -b:v 1000k -c:a wmav2 -b:a 192k \"{outputFilePath}\"";
+                }
+                else if (targetFormat == "avi")
+                {
+                    ffmpegArguments = $"-i \"{inputFilePath}\" -c:v libx264 -c:a aac \"{outputFilePath}\"";
+                }
+                else if (targetFormat == "mp4")
+                {
+                    ffmpegArguments = $"-i \"{inputFilePath}\" -c:v libx264 -c:a aac \"{outputFilePath}\"";
+                }
+
                 var processStartInfo = new ProcessStartInfo
                 {
                     FileName = ffmpegExePath,
-                    Arguments = $"-i \"{inputFilePath}\" \"{outputFilePath}\"",
+                    Arguments = ffmpegArguments,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -105,21 +116,21 @@ namespace WebApplication9.Controllers
                 using (var process = new Process { StartInfo = processStartInfo })
                 {
                     process.Start();
-                    output = process.StandardError.ReadToEnd(); // FFmpeg writes logs to StandardError
+                    output = process.StandardError.ReadToEnd(); // FFmpeg logs to StandardError
                     process.WaitForExit();
                 }
 
                 if (!System.IO.File.Exists(outputFilePath))
                 {
                     Debug.WriteLine($"FFmpeg Error: {output}");
-                    return StatusCode(500, "Video conversion failed. Check server logs for details.");
+                    return StatusCode(500, "Video conversion failed.");
                 }
 
                 return RedirectToAction("Download", new { fileName = outputFileName });
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Exception: {ex.Message}");
+                Debug.WriteLine($"Error: {ex.Message}");
                 return StatusCode(500, "An error occurred during video conversion.");
             }
         }
@@ -128,11 +139,17 @@ namespace WebApplication9.Controllers
         public IActionResult Download(string fileName)
         {
             string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", fileName);
+
+            // Check if the file exists
             if (System.IO.File.Exists(filePath))
             {
+                // Return the file content as a download
                 return File(System.IO.File.ReadAllBytes(filePath), "application/octet-stream", fileName);
             }
+
+            // If the file doesn't exist, return a 404 error
             return NotFound();
         }
+
     }
 }

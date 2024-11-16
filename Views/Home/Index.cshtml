@@ -1,12 +1,110 @@
-﻿
-@{
-    ViewData["Title"] = "Video Upload";
+﻿@{
+    ViewData["Title"] = "Video Upload & Convert";
 }
 
-<h1>Upload a Video File</h1>
+<h2>Upload and Convert Video</h2>
 
-<form asp-controller="Home" asp-action="Upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="videoFile" required />
-    <button type="submit">Upload Video</button>
+@if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.FileName))
+{
+    <div class="alert alert-success">
+        File uploaded successfully: @ViewBag.FileName
+    </div>
+
+    <form asp-action="Convert" method="post">
+        <div class="form-group">
+            <label for="targetFormat">Select Target Format</label>
+            <select class="form-control" id="targetFormat" name="targetFormat">
+                <option value="mp4">MP4</option>
+                <option value="avi">AVI</option>
+                <option value="mov">MOV</option>
+                <option value="wmv">WMV</option>
+                <option value="flv">FLV</option>
+                <!-- Add other formats as needed -->
+            </select>
+        </div>
+
+        <input type="hidden" name="fileName" value="@ViewBag.FileName" />
+        <button type="submit" class="btn btn-primary">Convert</button>
+    </form>
+}
+
+<h3>Upload Video (Drag and Drop)</h3>
+
+<!-- Form for video upload -->
+<form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
+    <!-- Drag and Drop Area -->
+    <div id="drag-and-drop-area" class="form-group" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+        <h4>Drag and drop your video file here</h4>
+        <p>or</p>
+        <input type="file" class="form-control" id="videoFile" name="videoFile" style="display:none;" />
+        <button type="button" id="selectFileBtn" class="btn btn-primary">Select File</button>
+    </div>
+
+    <!-- Display file name once selected -->
+    <p id="fileNameDisplay"></p>
+
+    <button type="submit" id="uploadBtn" class="btn btn-primary" style="display:none;">Upload</button>
 </form>
 
+<script>
+    // Handle drag and drop file selection
+    const dropArea = document.getElementById("drag-and-drop-area");
+    const fileInput = document.getElementById("videoFile");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+    const selectFileBtn = document.getElementById("selectFileBtn");
+
+    // Handle dragover and drop
+    dropArea.addEventListener("dragover", (event) => {
+        event.preventDefault(); // Prevent default behavior (Prevent file from being opened)
+        dropArea.style.backgroundColor = "#f0f0f0";
+    });
+
+    dropArea.addEventListener("dragleave", () => {
+        dropArea.style.backgroundColor = "";
+    });
+
+    dropArea.addEventListener("drop", (event) => {
+        event.preventDefault(); // Prevent default behavior (Prevent file from being opened)
+        dropArea.style.backgroundColor = "";
+        const file = event.dataTransfer.files[0]; // Get the first file
+        if (file) {
+            fileInput.files = event.dataTransfer.files; // Set the file input's files
+            fileNameDisplay.textContent = `Selected file: ${file.name}`;
+            uploadBtn.style.display = "inline"; // Show the upload button
+        }
+    });
+
+    // Open file dialog when select file button is clicked
+    selectFileBtn.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    // Update the file name display when a file is selected through the file input
+    fileInput.addEventListener("change", () => {
+        const file = fileInput.files[0];
+        if (file) {
+            fileNameDisplay.textContent = `Selected file: ${file.name}`;
+            uploadBtn.style.display = "inline"; // Show the upload button
+        }
+    });
+
+    // Handle form submission manually on upload button click
+    uploadBtn.addEventListener("click", () => {
+        document.getElementById("uploadForm").submit(); // Submit the form
+    });
+</script>
+
+@if (!string.IsNullOrEmpty(ViewBag.DownloadFileName))
+{
+    <div class="alert alert-info">
+        <p>Conversion complete! <a href="@Url.Action("Download", "Home", new { fileName = ViewBag.DownloadFileName })">Download your file</a></p>
+    </div>
+}
