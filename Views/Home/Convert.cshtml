@@ -1,0 +1,14 @@
+﻿@model WebApplication9.Models.VideoFile
+
+<h1>Convert Video: @Model.FileName</h1>
+
+<form asp-controller="Home" asp-action="Convert" method="post">
+    <input type="hidden" name="fileName" value="@Model.FileName" />
+    <label for="targetFormat">Choose a format:</label>
+    <select name="targetFormat" id="targetFormat" required>
+        <option value="mp4">MP4</option>
+        <option value="avi">AVI</option>
+        <option value="wmv">WMV</option> <!-- Added WMV -->
+    </select>
+    <button type="submit">Convert</button>
+</form>

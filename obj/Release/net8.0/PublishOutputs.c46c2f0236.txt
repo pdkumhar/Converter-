@@ -1,0 +1,8 @@
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\WebApplication9.exe
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\appsettings.json
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\WebApplication9.dll
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\WebApplication9.deps.json
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\WebApplication9.runtimeconfig.json
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\WebApplication9.pdb
+C:\Users\pdkum\source\repos\WebApplication9\WebApplication9\obj\Release\net8.0\PubTmp\Out\FFmpeg.AutoGen.dll

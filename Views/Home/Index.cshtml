@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewData["Title"] = "Video Upload";
+}
+
+<h1>Upload a Video File</h1>
+
+<form asp-controller="Home" asp-action="Upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="videoFile" required />
+    <button type="submit">Upload Video</button>
+</form>
+

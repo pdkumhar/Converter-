@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "aeFfJIvmofA=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\pdkum\\source\\repos\\WebApplication9\\webapplication9\\WebApplication9.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\pdkum\\.nuget\\packages\\ffmpeg.autogen\\7.0.0\\ffmpeg.autogen.7.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
