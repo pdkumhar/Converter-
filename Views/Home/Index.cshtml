@@ -17,7 +17,8 @@
         File uploaded successfully: @ViewBag.FileName
     </div>
 
-    <form asp-action="Convert" method="post">
+    <!-- Conversion Form -->
+    <form asp-action="Convert" method="post" id="convertForm">
         <div class="form-group">
             <label for="targetFormat">Select Target Format</label>
             <select class="form-control" id="targetFormat" name="targetFormat">
@@ -33,37 +34,41 @@
         <input type="hidden" name="fileName" value="@ViewBag.FileName" />
         <button type="submit" class="btn btn-primary">Convert</button>
     </form>
+
+    <!-- *** Progress Bar Section *** -->
+    <div id="progressBarContainer" class="mt-3" style="display: none;">
+        <div class="progress">
+            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                 role="progressbar" style="width: 100%;">
+                Converting...
+            </div>
+        </div>
+    </div>
 }
 
-   @* <h3>Upload Video (Drag and Drop)</h3>
- *@
-<!-- Form for video upload -->
+ @* <h3>Upload Video (Drag and Drop)</h3> *@
 <form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
-    <!-- Drag and Drop Area -->
     <div id="drag-and-drop-area" class="form-group" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
         <h4>Drag and drop your video file here</h4>
         <p>or</p>
         <input type="file" class="form-control" id="videoFile" name="videoFile" style="display:none;" />
         <button type="button" id="selectFileBtn" class="btn btn-primary">Select File</button>
     </div>
-
-    <!-- Display file name once selected -->
     <p id="fileNameDisplay"></p>
-
     <button type="submit" id="uploadBtn" class="btn btn-primary" style="display:none;">Upload</button>
 </form>
 
 <script>
-    // Handle drag and drop file selection
+    // Drag and Drop Area Handlers
     const dropArea = document.getElementById("drag-and-drop-area");
     const fileInput = document.getElementById("videoFile");
     const uploadBtn = document.getElementById("uploadBtn");
     const fileNameDisplay = document.getElementById("fileNameDisplay");
     const selectFileBtn = document.getElementById("selectFileBtn");
+    const progressBarContainer = document.getElementById("progressBarContainer");
 
-    // Handle dragover and drop
     dropArea.addEventListener("dragover", (event) => {
-        event.preventDefault(); // Prevent default behavior (Prevent file from being opened)
+        event.preventDefault();
         dropArea.style.backgroundColor = "#f0f0f0";
     });
 
@@ -72,33 +77,42 @@
     });
 
     dropArea.addEventListener("drop", (event) => {
-        event.preventDefault(); // Prevent default behavior (Prevent file from being opened)
+        event.preventDefault();
         dropArea.style.backgroundColor = "";
-        const file = event.dataTransfer.files[0]; // Get the first file
+        const file = event.dataTransfer.files[0];
         if (file) {
-            fileInput.files = event.dataTransfer.files; // Set the file input's files
+            fileInput.files = event.dataTransfer.files;
             fileNameDisplay.textContent = `Selected file: ${file.name}`;
-            uploadBtn.style.display = "inline"; // Show the upload button
+            uploadBtn.style.display = "inline";
         }
     });
 
-    // Open file dialog when select file button is clicked
     selectFileBtn.addEventListener("click", () => {
         fileInput.click();
     });
 
-    // Update the file name display when a file is selected through the file input
     fileInput.addEventListener("change", () => {
         const file = fileInput.files[0];
         if (file) {
             fileNameDisplay.textContent = `Selected file: ${file.name}`;
-            uploadBtn.style.display = "inline"; // Show the upload button
+            uploadBtn.style.display = "inline";
         }
     });
 
-    // Handle form submission manually on upload button click
-    uploadBtn.addEventListener("click", () => {
-        document.getElementById("uploadForm").submit(); // Submit the form
+    // Show progress bar on form submission
+    const convertForm = document.getElementById("convertForm");
+    if (convertForm) {
+        convertForm.addEventListener("submit", (event) => {
+            progressBarContainer.style.display = "block"; // Show the progress bar
+        });
+    }
+
+    // *** Hide progress bar on page load if conversion is complete ***
+    window.addEventListener("load", () => {
+        const downloadLink = document.querySelector(".alert-info a");
+        if (downloadLink) {
+            progressBarContainer.style.display = "none"; // Hide progress bar after conversion completes
+        }
     });
 </script>
 
@@ -108,10 +122,3 @@
         <p>Conversion complete! <a href="@Url.Action("Download", "Home", new { fileName = ViewBag.DownloadFileName })">Download your file</a></p>
     </div>
 }
-<!-- *** Display the error message if set in the controller ***-->
-@* @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-{
-        <div class="alert alert-danger">
-        @ViewBag.ErrorMessage
-        </div>
-} *@

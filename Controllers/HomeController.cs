@@ -52,7 +52,6 @@ namespace WebApplication9.Controllers
         }
 
         // POST: Handle the video conversion
-        [HttpPost]
         public IActionResult Convert(string fileName, string targetFormat)
         {
             string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
@@ -63,10 +62,9 @@ namespace WebApplication9.Controllers
             // *** Check if the source and target formats are the same ***
             if (Path.GetExtension(fileName).TrimStart('.').ToLower() == targetFormat.ToLower())
             {
-                // *** Use ViewBag to pass the error message and re-set the uploaded file ***
                 ViewBag.ErrorMessage = "Source and target formats are the same. Please choose a different format.";
                 ViewBag.FileName = fileName; // Set the uploaded file name
-                return View("Index"); // Or return to another view if needed
+                return View("Index");
             }
 
             string ffmpegExePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ffmpeg", "ffmpeg.exe");
@@ -81,12 +79,6 @@ namespace WebApplication9.Controllers
                 return BadRequest("Input file not found.");
             }
 
-            // Check if the formats are different
-            if (Path.GetExtension(fileName).TrimStart('.').ToLower() == targetFormat.ToLower())
-            {
-                return BadRequest("Source and target formats are the same. Please choose a different format.");
-            }
-
             try
             {
                 if (System.IO.File.Exists(outputFilePath))
@@ -94,10 +86,9 @@ namespace WebApplication9.Controllers
                     System.IO.File.Delete(outputFilePath);
                 }
 
-                // Add FFmpeg arguments based on the selected format
                 string ffmpegArguments = $"-i \"{inputFilePath}\" \"{outputFilePath}\"";
 
-                // Adjust arguments for specific formats
+                // Add specific arguments for different formats if needed
                 if (targetFormat == "wmv")
                 {
                     ffmpegArguments = $"-i \"{inputFilePath}\" -c:v wmv2 -b:v 1000k -c:a wmav2 -b:a 192k \"{outputFilePath}\"";
@@ -135,7 +126,9 @@ namespace WebApplication9.Controllers
                     return StatusCode(500, "Video conversion failed.");
                 }
 
-                return RedirectToAction("Download", new { fileName = outputFileName });
+                // Instead of redirecting, pass the download file name to the view
+                ViewBag.DownloadFileName = outputFileName;
+                return View("Index"); // Stay on the same page, showing the download link
             }
             catch (Exception ex)
             {
@@ -143,6 +136,7 @@ namespace WebApplication9.Controllers
                 return StatusCode(500, "An error occurred during video conversion.");
             }
         }
+
 
         // Download converted file
         public IActionResult Download(string fileName)
