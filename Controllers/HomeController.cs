@@ -60,6 +60,15 @@ namespace WebApplication9.Controllers
             string outputFileName = Path.GetFileNameWithoutExtension(fileName) + "." + targetFormat;
             string outputFilePath = Path.Combine(uploadsFolder, outputFileName);
 
+            // *** Check if the source and target formats are the same ***
+            if (Path.GetExtension(fileName).TrimStart('.').ToLower() == targetFormat.ToLower())
+            {
+                // *** Use ViewBag to pass the error message and re-set the uploaded file ***
+                ViewBag.ErrorMessage = "Source and target formats are the same. Please choose a different format.";
+                ViewBag.FileName = fileName; // Set the uploaded file name
+                return View("Index"); // Or return to another view if needed
+            }
+
             string ffmpegExePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ffmpeg", "ffmpeg.exe");
 
             if (!System.IO.File.Exists(ffmpegExePath))

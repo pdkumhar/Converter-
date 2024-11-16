@@ -1040,6 +1040,22 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\ChatGPT - Google Chrome 2024-11-15 16-48-40.wmv))</OriginalItemSpec>
     </StaticWebAsset>
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\Harry Potter and the Sorcerer's Stone (2001) [REPACK] [720p] [BluRay] [YTS.MX].torrent))">
+      <SourceType>Package</SourceType>
+      <SourceId>WebApplication9</SourceId>
+      <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
+      <BasePath>_content/WebApplication9</BasePath>
+      <RelativePath>uploads/Harry Potter and the Sorcerer's Stone (2001) [REPACK] [720p] [BluRay] [YTS.MX].torrent</RelativePath>
+      <AssetKind>All</AssetKind>
+      <AssetMode>All</AssetMode>
+      <AssetRole>Primary</AssetRole>
+      <RelatedAsset></RelatedAsset>
+      <AssetTraitName></AssetTraitName>
+      <AssetTraitValue></AssetTraitValue>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\Harry Potter and the Sorcerer's Stone (2001) [REPACK] [720p] [BluRay] [YTS.MX].torrent))</OriginalItemSpec>
+    </StaticWebAsset>
     <StaticWebAsset Include="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\staticwebassets\uploads\suceess.wav))">
       <SourceType>Package</SourceType>
       <SourceId>WebApplication9</SourceId>

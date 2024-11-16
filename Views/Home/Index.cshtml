@@ -35,8 +35,8 @@
     </form>
 }
 
-<h3>Upload Video (Drag and Drop)</h3>
-
+   @* <h3>Upload Video (Drag and Drop)</h3>
+ *@
 <!-- Form for video upload -->
 <form id="uploadForm" asp-action="Upload" method="post" enctype="multipart/form-data">
     <!-- Drag and Drop Area -->
@@ -108,3 +108,10 @@
         <p>Conversion complete! <a href="@Url.Action("Download", "Home", new { fileName = ViewBag.DownloadFileName })">Download your file</a></p>
     </div>
 }
+<!-- *** Display the error message if set in the controller ***-->
+@* @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+{
+        <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+        </div>
+} *@
