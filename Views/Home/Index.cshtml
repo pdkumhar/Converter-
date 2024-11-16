@@ -9,10 +9,99 @@
     </div>
 }
 
+@{
+    ViewData["Title"] = "Video Upload";
+}
+
 <h1>Upload a Video File</h1>
 
-<form asp-controller="Home" asp-action="Upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="videoFile" required />
-    <button type="submit">Upload Video</button>
-</form>
+<div id="dropArea" style="border: 2px dashed #ccc; padding: 20px; text-align: center;">
+    <p>Drag & Drop your video here or <label for="videoFile" style="cursor: pointer; color: blue;">browse</label></p>
+    <input type="file" id="videoFile" name="videoFile" accept="video/*" style="display: none;" />
+</div>
+
+<button id="uploadBtn" type="button" style="margin-top: 20px;">Upload Video</button>
+
+<!-- Progress indicator -->
+<div id="progress" style="margin-top: 20px; display: none;">
+    <p>Uploading...</p>
+</div>
+
+<script>
+    const dropArea = document.getElementById('dropArea');
+    const videoFileInput = document.getElementById('videoFile');
+    const uploadButton = document.getElementById('uploadBtn');
+    const progressDiv = document.getElementById('progress');
+    let file;
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, e => e.preventDefault(), false);
+        dropArea.addEventListener(eventName, e => e.stopPropagation(), false);
+    });
+
+    // Highlight drop area when dragging
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.style.borderColor = 'blue', false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, () => dropArea.style.borderColor = '#ccc', false);
+    });
+
+    // Handle file drop
+    dropArea.addEventListener('drop', e => {
+        file = e.dataTransfer.files[0];
+        if (file) {
+            dropArea.innerHTML = `<p>Selected File: ${file.name}</p>`;
+        }
+    });
+
+    // Handle file input change
+    videoFileInput.addEventListener('change', () => {
+        file = videoFileInput.files[0];
+        if (file) {
+            dropArea.innerHTML = `<p>Selected File: ${file.name}</p>`;
+        }
+    });
+
+    // Handle upload button click
+    uploadButton.addEventListener('click', () => {
+        if (!file) {
+            alert('Please select a video file to upload.');
+            return;
+        }
+
+        // Prepare FormData for upload
+        const formData = new FormData();
+        formData.append('videoFile', file);
+
+        // Show progress
+        progressDiv.style.display = 'block';
+
+        // Send file via AJAX
+        fetch('/Home/Upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Upload failed.');
+            }
+        })
+        .then(() => {
+            alert('Video uploaded successfully!');
+            progressDiv.style.display = 'none';
+            location.reload(); // Reload page after upload
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while uploading the video.');
+            progressDiv.style.display = 'none';
+        });
+    });
+</script>
+
 
